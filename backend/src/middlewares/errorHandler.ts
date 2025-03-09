@@ -8,9 +8,9 @@ const errorHandler = (
     res: Response,
     next: NextFunction,
 ) => {
-    const statusCode = error.statusCode || 500;
+    const statusCode = error.statusCode || error.status || 500;
     res.status(statusCode).json({
-        message: error.message,
+        message: error.message || 'Something went wrong...!',
         stack: config.env === 'development' ? error.stack : '',
     });
 };

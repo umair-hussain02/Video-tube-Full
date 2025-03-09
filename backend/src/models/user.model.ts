@@ -1,16 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
-import { User } from '../types/user.types';
-import { NextFunction } from 'express';
-import bcrypt from 'bcrypt';
+import { IUser } from '../types/user.types';
 
-const userSchema = new Schema<User>(
+const userSchema = new Schema<IUser>(
     {
-        firstName: {
-            type: String,
-            required: true,
-            trim: true,
-        },
-        lastName: {
+        fullName: {
             type: String,
             required: true,
             trim: true,
@@ -28,6 +21,8 @@ const userSchema = new Schema<User>(
         },
         profileImage: {
             type: String,
+            default:
+                'https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?t=st=1741544515~exp=1741548115~hmac=eef6e66a9e164784b2227d2ccc7ef1f68e58ccda71de6573f9a0a9f8710a0db1&w=996',
         },
         password: {
             type: String,
@@ -40,18 +35,21 @@ const userSchema = new Schema<User>(
     },
 );
 
-userSchema.pre('save', async function (next: NextFunction) {
-    if (!this.userName) {
-        const generatedUserName = `${this.firstName.toLowerCase()}${this.lastName.toLowerCase}`;
-        this.userName = generatedUserName;
-    }
-    next();
-});
+// userSchema.pre('save',
+//     async function (this: Document & IUser, next: NextFunction) {
+//         // Generate username if it's not set
+//         if (!this.userName) {
+//             const generatedUserName = `${this.firstName.toLowerCase()}${this.lastName.toLowerCase()}`;
+//             this.userName = generatedUserName;
+//         }
 
-userSchema.pre('save', async function (next: NextFunction) {
-    if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-});
+//         // Hash the password if it's being modified
+//         if (this.isModified('password')) {
+//             this.password = await bcrypt.hash(this.password, 10);
+//         }
 
-export const User = mongoose.model<User>('User', userSchema);
+//         next();
+//     },
+// );
+
+export const User = mongoose.model<IUser>('User', userSchema);
